@@ -7,20 +7,23 @@ app = Flask(__name__)
 def hello_world():  # put application's code here
     return 'Hello World!'
 
-
-# TODO: QR Code, API for Verification
+# TODO: Deta Link, Front and Backend Integration
 @app.route('/createCertificate',methods = ["POST"])
 def create_invoice():
-    # name = request.json['name']
-    # description = request.json['description']
-    # company_name = request.json['company']
+    name = request.json['name']
+    description = request.json['description']
+    company_name = request.json['company']
+    organizer_name = request.json['oname']
+    organizer_role = request.json['role']
     date_issued = date.today().strftime("%B %d, %Y")
+
     return date_issued
 
 @app.route('/verify/<CID>', methods=["POST"])
 def verify(CID):
-
     return f'CID is {CID}'
+
+
 
 
 
