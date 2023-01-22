@@ -8,7 +8,7 @@ from verify_cid import verify_cid
 def generateQR(CID):
         # input_data = f"https://{CID}.ipfs.dweb.link/"
 
-        input_data= f"https://nf9dlh.deta.dev/verify/{CID}"
+        input_data= f"https://tp4xpl.deta.dev/{CID}"
         #Creating an instance of qrcode
         qr = qrcode.QRCode(
                 version=1,

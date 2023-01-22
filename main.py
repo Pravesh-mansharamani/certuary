@@ -38,7 +38,7 @@ def create_invoice():
 
     return new['value']['cid']
 
-@app.route('/verify/<CID>', methods=["POST"])
+@app.route('/verify/<CID>', methods=["GET"])
 @cross_origin(supports_credentials=True)
 def verify(CID):
     return verify_cid(CID)
