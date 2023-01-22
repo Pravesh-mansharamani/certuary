@@ -33,6 +33,6 @@ def pinToIPFS():
   response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
 
-  return response
+  return response.text
 
-pinToIPFS()
+print(pinToIPFS())

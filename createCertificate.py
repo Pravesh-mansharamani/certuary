@@ -83,16 +83,15 @@ def createCertificate(name, sign, desc, company, role):
     photos = deta.Drive("certificate")
 
 
-    with open("tmp/minted-certificate.png", 'rb') as f:
-        file = f.read()
+
 
     url = "https://api.estuary.tech/content/add"
     # print(bytes_certificate)
-    name = 'faewfaw'
+    FILENAME = "tmp/minted-certificate.png"
 
     payload = {}
     files = [
-        (('data', (f'{name}', file), 'application/octet-stream'))
+        ('data', (f'{name}', open(FILENAME, 'rb'), 'application/octet-stream'))
     ]
     headers = {
         'Accept': 'application/json',
@@ -104,9 +103,9 @@ def createCertificate(name, sign, desc, company, role):
 
     # print(res)
 
-    photos.put("/works/minted-certificate.png", img_bytes)
+    # photos.put("/works/minted-certificate.png", img_bytes)
 
-    return response
+    return response.json()
 
 
 

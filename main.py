@@ -32,11 +32,13 @@ def create_invoice():
     sign = request.json['oname']
     role = request.json['role']
     date_issued = date.today().strftime("%B %d, %Y")
+
     res = createCertificate(name,sign,desc,company,role)
-    new = (pasteQR(res['value']['cid']))
+    print(res)
+    new = (pasteQR(res['cid']))
 
 
-    return new['value']['cid']
+    return new['cid']
 
 @app.route('/verify/<CID>', methods=["GET"])
 @cross_origin(supports_credentials=True)

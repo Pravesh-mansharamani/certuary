@@ -36,6 +36,6 @@ def pasteQR(CID):
 
     response = requests.request("POST", url, headers=headers, data=payload, files=files)
 
-    return response
+    return response.json()
 
 
