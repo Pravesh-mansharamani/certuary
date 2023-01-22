@@ -1,40 +1,51 @@
+import io
+import os
+
+import dotenv
+import requests
+import requests as requests
 from PIL import Image, ImageFont, ImageDraw
 import datetime
 import textwrap
 
+from deta import Deta
+
+from generateQR import generateQR
+from pasteQR import pasteQR
+from pinToIPFS import pinToIPFS
 
 
-qr_img = Image.open('assets/sampleqrcode.png')
-# 996, 1166 pixel
-
-# fonts and image Variables
-img = Image.open('assets/Certificate.png')
-
-fnt_company = ImageFont.truetype(r'fonts/name.ttf', 45)
-fnt_description = ImageFont.truetype(r'fonts/general.ttf', 30)
-fnt_name = ImageFont.truetype(r'fonts/name.ttf', 45)
-fnt_date = ImageFont.truetype(r'fonts/name.ttf', 35)
-fnt_sign = ImageFont.truetype(r'fonts/sign.ttf', 45)
-fnt_role = ImageFont.truetype(r'fonts/name.ttf', 30)
-
-#Current date
-d = datetime.datetime.now()
-current_date = d.strftime("%d") + " " + d.strftime("%B") + ", " + d.strftime("%Y")
-
-
-#Input Variable
-name = input("Enter Name: ")
-sign = input("Enter Signature: ")
-desc = input("Enter Description: ")
-company = input("Enter Company Name: ")
-role = input("Enter Role: ")
 
 # Wrap text at a maximum line width of 80 characters
-formatted_description = textwrap.fill(desc, width=80)
 
 
 # main function
-def createCertificate(name, sign, description, company, role ):
+def createCertificate(name, sign, desc, company, role):
+    dotenv.load_dotenv()
+
+    description = textwrap.fill(desc, width=80)
+
+    deta = Deta("b0f571t2_7WegmFsVjsimbaHQPhZvpn9aZYv74M3E")
+    drive = deta.Drive('certificate')
+    content = drive.get('Certificate.png')
+    bytes_certificate = content.read()
+    content.close()
+
+
+    # qr_img = Image.open('assets/qr.png')
+
+    img = Image.open(io.BytesIO(bytes_certificate))
+
+    fnt_company = ImageFont.truetype(r'fonts/name.ttf', 45)
+    fnt_description = ImageFont.truetype(r'fonts/general.ttf', 30)
+    fnt_name = ImageFont.truetype(r'fonts/name.ttf', 45)
+    fnt_date = ImageFont.truetype(r'fonts/name.ttf', 35)
+    fnt_sign = ImageFont.truetype(r'fonts/sign.ttf', 45)
+    fnt_role = ImageFont.truetype(r'fonts/name.ttf', 30)
+
+    #Current date
+    d = datetime.datetime.now()
+    current_date = d.strftime("%d") + " " + d.strftime("%B") + ", " + d.strftime("%Y")
     draw = ImageDraw.Draw(img)
 
     # Date
@@ -65,12 +76,39 @@ def createCertificate(name, sign, description, company, role ):
         draw.text((1426, 1060), sign, font=fnt_sign, fill=(0, 0, 0))
 
     #QR Code
-    img.paste(qr_img, (894, 1070))
+    # img.paste(qr_img, (894, 1070))
     img.save('tmp/minted-certificate.png')
-    return 0
+
+    # create and use as many Drives as you want!
+    photos = deta.Drive("certificate")
+
+
+    with open("tmp/minted-certificate.png", 'rb') as f:
+        file = f.read()
+
+    url = "https://api.estuary.tech/content/add"
+    # print(bytes_certificate)
+    name = 'faewfaw'
+
+    payload = {}
+    files = [
+        (('data', (f'{name}', file), 'application/octet-stream'))
+    ]
+    headers = {
+        'Accept': 'application/json',
+        'Authorization': 'Bearer ESTf4be2f1c-dd16-4813-a6d5-0dad7ec0b0d3ARY'
+    }
+
+    response = requests.request("POST", url, headers=headers, data=payload, files=files)
+
+
+    # print(res)
+
+    photos.put("/works/minted-certificate.png", img_bytes)
+
+    return response
 
 
 
 
 
-createCertificate(name, sign, formatted_description, company, role)
